@@ -1,5 +1,6 @@
 
 #include<iostream>
+#include <time.h>
 
 #define MAX_SIZE 128
 #define TEST_SIZE 100
@@ -34,6 +35,7 @@ memory::memory(){
 }
 //computing processes sizes between 3 and 10 units
 void memory::init_processes(){
+   srand(time(NULL));
     for(int i=0;i<=TEST_SIZE;i++)
     {
         psize[i]=rand()%8+3;
@@ -118,10 +120,12 @@ int memory::deallocate_mem(int process_id){
 
 void memory::print_mem() {
     for(int i=0;i<MAX_SIZE-6;++i){
-        cout<<allocation[i]<<" "<<allocation[i+1]<<" "<<allocation[i+2]
-            <<" "<<allocation[i+3] <<" "<<allocation[i+4]<<" "<<allocation[i+5]
-            <<" " <<allocation[i+6] <<" "<<allocation[i+7]<<endl;
-        i=i+7;
+        if(i%8==0){
+            cout<<endl;
+        }
+        cout<<allocation[i]<<" ";
+
+
     }
     cout<<"There is "<<fragment_count()<<" fragments in memory."<<endl;
 }
@@ -131,11 +135,16 @@ int memory::fragment_count() {
     fragments=0;
     check=0;
     for(int i=0;i<MAX_SIZE;i++){
-        if(allocation[i]==0){
-            check++;
-        } else if(check<3){
-            fragments++;
+        if(allocation[i] == 0 ){
+            ++check;
         }
-        check=0;
+        else if(check<3 && check>0){
+            fragments++;
+            check=0;
+        }
+        else{
+            check=0;
+        }
     }
+    return fragments;
 }
