@@ -12,13 +12,14 @@ class memory
 {
     public:
         memory();
-        void allocate_mem();
+        void allocate_mem(int mode);
         int allocate_mem_ff(int process_id, int num_units);
+        int allocate_mem_nf(int process_id, int num_units);
+        int allocate_mem_bf(int process_id, int num_units);
+        int allocate_mem_wf(int process_id, int num_units);
         int deallocate_mem (int process_id);
         int fragment_count();
         void print_mem();
-
-
 
     private:
         void init_processes();
@@ -54,10 +55,7 @@ void memory::init_allocation(){
 
 int memory::allocate_mem_ff(int process_id, int num_units){
     int ct=num_units; //counting free blocks in a row
-//    cout<<"CT is "<<ct<<endl;
-//    cout<<"Process ID is "<<process_id<<endl;
     for(int start=0;start<=MAX_SIZE-num_units;start++) {
-//        cout<<"Start is "<<start<<endl;
         if (allocation[start] == 0) {
             for (int j = (start + 1); j < MAX_SIZE; j++){
               if (allocation[j] == 0 && ct != 0) {
@@ -79,21 +77,120 @@ int memory::allocate_mem_ff(int process_id, int num_units){
             }
         }
     }
-//    cout<<"Failed and Finished loop"<<endl;
     return -1;
 }
 
+int memory::allocate_mem_nf(int process_id, int num_units){
+    int ct=num_units; //counting free blocks in a row
+    for(int start=0;start<=MAX_SIZE-num_units;start++) {
+        if (allocation[start] == 0) {
+            for (int j = (start + 1); j < MAX_SIZE; j++){
+                if (allocation[j] == 0 && ct != 0) {
+                    ct--;
+                } else if (allocation[j] != 0) {
+                    start = j;
+                    ct = num_units;
+//                cout<<"Is this updated?"<<endl;
+                } else if (ct == 0 && allocation[j] == 0) {
+                    for (int k = start; k < start + num_units; k++) {
+                        allocation[k] = process_id;
+//                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+                    }
+                    return 1;
+                } else {
+//                  cout<<"Failed ";
+                    return -1;
+                }
+            }
+        }
+    }
+    return -1;
+}
 
-void memory::allocate_mem(){
+int memory::allocate_mem_bf(int process_id, int num_units){
+    int ct=num_units; //counting free blocks in a row
+    for(int start=0;start<=MAX_SIZE-num_units;start++) {
+        if (allocation[start] == 0) {
+            for (int j = (start + 1); j < MAX_SIZE; j++){
+                if (allocation[j] == 0 && ct != 0) {
+                    ct--;
+                } else if (allocation[j] != 0) {
+                    start = j;
+                    ct = num_units;
+//                cout<<"Is this updated?"<<endl;
+                } else if (ct == 0 && allocation[j] == 0) {
+                    for (int k = start; k < start + num_units; k++) {
+                        allocation[k] = process_id;
+//                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+                    }
+                    return 1;
+                } else {
+//                  cout<<"Failed ";
+                    return -1;
+                }
+            }
+        }
+    }
+    return -1;
+}
+
+int memory::allocate_mem_wf(int process_id, int num_units){
+    int ct=num_units; //counting free blocks in a row
+    for(int start=0;start<=MAX_SIZE-num_units;start++) {
+        if (allocation[start] == 0) {
+            for (int j = (start + 1); j < MAX_SIZE; j++){
+                if (allocation[j] == 0 && ct != 0) {
+                    ct--;
+                } else if (allocation[j] != 0) {
+                    start = j;
+                    ct = num_units;
+//                cout<<"Is this updated?"<<endl;
+                } else if (ct == 0 && allocation[j] == 0) {
+                    for (int k = start; k < start + num_units; k++) {
+                        allocation[k] = process_id;
+//                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+                    }
+                    return 1;
+                } else {
+//                  cout<<"Failed ";
+                    return -1;
+                }
+            }
+        }
+    }
+    return -1;
+}
+
+void memory::allocate_mem(int mode){
 
     int temp;
     int del=1;
 for (int i=0;i<TEST_SIZE;i++)
 {
     temp = psize[i];
-    while(allocate_mem_ff(i+1,temp)==-1){
-        if(deallocate_mem(del)==1) {
-            del++;
+    if(mode==1) {
+        while (allocate_mem_ff(i + 1, temp) == -1) {
+            if (deallocate_mem(del) == 1) {
+                del++;
+            }
+        }
+    } else if(mode==2) {
+        while (allocate_mem_bf(i + 1, temp) == -1) {
+            if (deallocate_mem(del) == 1) {
+                del++;
+            }
+        }
+    } else if(mode==3) {
+        while (allocate_mem_nf(i + 1, temp) == -1) {
+            if (deallocate_mem(del) == 1) {
+                del++;
+            }
+        }
+    } else {
+        while (allocate_mem_wf(i + 1, temp) == -1) {
+            if (deallocate_mem(del) == 1) {
+                del++;
+            }
         }
     }
 }
