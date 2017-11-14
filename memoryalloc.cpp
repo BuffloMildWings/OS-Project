@@ -6,9 +6,9 @@ using namespace std;
 
 int main(){
     memory process;
-//    process.init_processes();
-//    process.init_allocation();
+    process.print_mem();
     process.allocate_mem();
+    process.print_mem();
 
 
 
