@@ -49,9 +49,9 @@ void memory::init_allocation(){
 int memory::allocate_mem_ff(int process_id, int num_units){
     int ct=num_units; //counting free blocks in a row
     cout<<"CT is "<<ct<<endl;
-    cout<<"Process ID is "<<process_id<<endl;
+//    cout<<"Process ID is "<<process_id<<endl;
     for(int start=0;start<=MAX_SIZE-num_units;start++) {
-        cout<<"Start is "<<start<<endl;
+//        cout<<"Start is "<<start<<endl;
         if (allocation[start] == 0) {
             for (int j = (start + 1); j < MAX_SIZE; j++){
               if (allocation[j] == 0 && ct != 0) {
@@ -61,10 +61,11 @@ int memory::allocate_mem_ff(int process_id, int num_units){
                 ct = num_units;
                 cout<<"Is this updated?"<<endl;
             } else if (ct == 0 && allocation[j] == 0) {
-                for (int k = start; k < num_units; k++) {
+                for (int k = start; k < start + num_units; k++) {
                     allocation[k] = process_id;
+                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
                 }
-                  cout<<"Inserted "<<process_id<<" into Memory chunk "<<start<<endl;
+//                  cout<<"Inserted "<<process_id<<" into Memory chunk "<<start<<endl;
                 return 1;
             } else {
                   cout<<"Failed ";
