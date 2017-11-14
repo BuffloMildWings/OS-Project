@@ -1,10 +1,15 @@
-#include<iostream.h>
+#include<iostream>
 #include<conio.h>
-void main()
+#include <random>
+#include "Deallocate.h"
+
+using namespace std;
+int main()
 {
-	int mem[10],processes[10],n1,n2,flags[10],allocation[10];
+	int mem[128],processes,n1,n2,flags[10],allocation[10];  //N1 Number of partitions ad N2 number of processes 10,000
 	int i,j;
-	clrscr();
+    bool allocation;
+//	clrscr();
 	for(i=0;i < 10;i++)
 	{
 		flags[i]=0;
@@ -15,7 +20,7 @@ void main()
 	cout<<"\n Enter size of each partition:";
 	for(i=0;i < n1;i++)
 		cin>>mem[i];
-	cout<<"\ enter no. of processes :";
+	cout<<"\n enter no. of processes :";
 	cin>>n2;
 	cout<<"\n Enter size of each process:";
 	for(i=0;i < n2;i++)
@@ -40,4 +45,5 @@ void main()
 			cout<<"-------";
 	}
 	getch();
+    return 0;
 }
