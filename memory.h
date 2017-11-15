@@ -1,6 +1,7 @@
-
 #include<iostream>
 #include <time.h>
+#include <cstdlib>
+#include <ctime>
 
 #define MAX_SIZE 128
 #define TEST_SIZE 100
@@ -94,18 +95,18 @@ int memory::allocate_mem_nf(int process_id, int num_units){
                     start = j;
                     position = start;
                     ct = num_units;
-               cout<<"Is this updated?"<<endl;
+            //   cout<<"Is this updated?"<<endl;
                 } else if (ct == 0 && allocation[j] == 0) {
                     int k;
                     for ( k = start; k < start + num_units; k++) {
                         allocation[k] = process_id;
-                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+               //     cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
                     }
                     position=k+1;
                     if(position==MAX_SIZE){position=0;}
                     return 1;
                 } else {
-                  cout<<"Failed ";
+                 // cout<<"Failed ";
                     return -1;
                 }
             }
@@ -116,30 +117,70 @@ int memory::allocate_mem_nf(int process_id, int num_units){
 
 int memory::allocate_mem_bf(int process_id, int num_units){
     int ct=num_units; //counting free blocks in a row
-    for(int start=0;start<=MAX_SIZE-num_units;start++) {
-        if (allocation[start] == 0) {
+    int bestfit=MAX_SIZE+1;
+    int bf=0;
+
+    for(int start=0;start<=MAX_SIZE-num_units;start++)
+        if (allocation[start] == 0){
             for (int j = (start + 1); j < MAX_SIZE; j++){
-                if (allocation[j] == 0 && ct != 0) {
+                if (allocation[j] == 0 && ct != 0){
                     ct--;
-                } else if (allocation[j] != 0) {
+                    bf++;
+                }
+
+            else if (allocation[j] != 0) {
                     start = j;
                     ct = num_units;
+                    bf=0;
 //                cout<<"Is this updated?"<<endl;
-                } else if (ct == 0 && allocation[j] == 0) {
-                    for (int k = start; k < start + num_units; k++) {
+            }
+
+            else if (ct == 0 && allocation[j] == 0) {
+                    int st=j+1;
+                        for(int m =st;m<MAX_SIZE-num_units;m++){
+                                if(allocation[m]==0)
+                                    bf++;   //keep counting
+                                else if(allocation[m]!=0){
+                                    if(bf<bestfit && bf>num_units){     //sequence lower but not optimal, save and reset count
+                                        bestfit=m-bf; //get start of sequence
+                                        bf=0; //reset sequence count
+                                        st=m; }
+                                    else if(bf>bestfit){    //if sequence bigger than best fit,dont save,reset count
+                                        bf=0;
+                                        st=m;
+                                    }
+
+                                    else if (bf == num_units){  //optimal fit:enter process
+                                            bestfit = m-bf;
+                                        for (int k = bestfit; k < bestfit + num_units; k++){
+                                               allocation[k] = process_id;
+                                        }return 1;
+                                    }
+
+
+                                    }
+                    for (int k = bestfit; k < bestfit + num_units; k++) {
                         allocation[k] = process_id;
 //                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
                     }
+                        }
                     return 1;
-                } else {
+                }
+
+                else {
 //                  cout<<"Failed ";
                     return -1;
                 }
             }
-        }
-    }
+
     return -1;
+
+
 }
+
+}
+
+
 
 int memory::allocate_mem_wf(int process_id, int num_units){
     int ct=num_units; //counting free blocks in a row
@@ -167,6 +208,9 @@ int memory::allocate_mem_wf(int process_id, int num_units){
     }
     return -1;
 }
+
+
+
 /*
  * First Fit = 1
  * Next Fit = 2
@@ -267,3 +311,4 @@ int memory::fragment_count() {
     }
     return fragments;
 }
+
