@@ -39,7 +39,7 @@ memory::memory(){
 }
 //computing processes sizes between 3 and 10 units
 void memory::init_processes(){
-   srand(time(NULL));
+   srand((unsigned int)time(NULL));
     for(int i=0;i<=TEST_SIZE;i++)
     {
         psize[i]=rand()%8+3;
