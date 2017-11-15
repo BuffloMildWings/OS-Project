@@ -27,12 +27,15 @@ class memory
         int psize[TEST_SIZE];
         int allocation[MAX_SIZE];
         int fragments;
+        int position;
 
 };
 memory::memory(){
     init_processes();
     init_allocation();
     fragments=0;
+    position=0;
+
 }
 //computing processes sizes between 3 and 10 units
 void memory::init_processes(){
@@ -82,23 +85,27 @@ int memory::allocate_mem_ff(int process_id, int num_units){
 
 int memory::allocate_mem_nf(int process_id, int num_units){
     int ct=num_units; //counting free blocks in a row
-    for(int start=0;start<=MAX_SIZE-num_units;start++) {
+    for(int start=position;start<=MAX_SIZE-num_units;start++) {
         if (allocation[start] == 0) {
             for (int j = (start + 1); j < MAX_SIZE; j++){
                 if (allocation[j] == 0 && ct != 0) {
                     ct--;
                 } else if (allocation[j] != 0) {
                     start = j;
+                    position = start;
                     ct = num_units;
-//                cout<<"Is this updated?"<<endl;
+               cout<<"Is this updated?"<<endl;
                 } else if (ct == 0 && allocation[j] == 0) {
-                    for (int k = start; k < start + num_units; k++) {
+                    int k;
+                    for ( k = start; k < start + num_units; k++) {
                         allocation[k] = process_id;
-//                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
                     }
+                    position=k+1;
+                    if(position==MAX_SIZE){position=0;}
                     return 1;
                 } else {
-//                  cout<<"Failed ";
+                  cout<<"Failed ";
                     return -1;
                 }
             }
@@ -160,7 +167,12 @@ int memory::allocate_mem_wf(int process_id, int num_units){
     }
     return -1;
 }
-
+/*
+ * First Fit = 1
+ * Next Fit = 2
+ * Best Fit = 3
+ * Worst Fit = 4
+ */
 void memory::allocate_mem(int mode){
 
     int temp;
@@ -175,13 +187,13 @@ for (int i=0;i<TEST_SIZE;i++)
             }
         }
     } else if(mode==2) {
-        while (allocate_mem_bf(i + 1, temp) == -1) {
+        while (allocate_mem_nf(i + 1, temp) == -1) {
             if (deallocate_mem(del) == 1) {
                 del++;
             }
         }
     } else if(mode==3) {
-        while (allocate_mem_nf(i + 1, temp) == -1) {
+        while (allocate_mem_bf(i + 1, temp) == -1) {
             if (deallocate_mem(del) == 1) {
                 del++;
             }
@@ -197,9 +209,15 @@ for (int i=0;i<TEST_SIZE;i++)
 
 }
 
+
+/*
+ * Removes the oldest process
+ *
+ */
 int memory::deallocate_mem(int process_id){
     int i=0;
     bool rem_flag=false;
+    position=0;
     while(i<MAX_SIZE){
         if(rem_flag ||allocation[i]==process_id){
             rem_flag=true;
@@ -214,7 +232,9 @@ int memory::deallocate_mem(int process_id){
     return -1;
 
 }
-
+/*
+ * Outputs the memory matrix
+ */
 void memory::print_mem() {
     for(int i=0;i<MAX_SIZE-6;++i){
         if(i%8==0){
@@ -226,7 +246,9 @@ void memory::print_mem() {
     }
     cout<<"There is "<<fragment_count()<<" fragments in memory."<<endl;
 }
-
+/*
+ * Returns the fragment count
+ */
 int memory::fragment_count() {
     int check;
     fragments=0;
