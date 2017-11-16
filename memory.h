@@ -128,7 +128,8 @@ int memory::allocate_mem_bf(int process_id, int num_units){
 
                 else if (allocation[j] != 0) {
                     cout<<"Is this updated?"<<endl;
-                    if (bf<bestfit && bf>num_units){
+                    if(bf=MAX_SIZE){return -1;}
+                    else if (bf<bestfit && bf>num_units){
                             bestfit=bf;
                             start = j;
                             bf=0;
@@ -140,18 +141,16 @@ int memory::allocate_mem_bf(int process_id, int num_units){
                     else if(bf=num_units){
                         for (int k = start; k < start + num_units; k++) {
                             allocation[k] = process_id;
-         cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+                cout<<"optimal!!Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
                     }
-                        return 1;
-                    }
+                        return 1;   }
 
-            }
-                else return -1;
-        }
+                    }
+                else return -1; }
+
         for (int k = start; k < start + num_units; k++) {
             allocation[k] = process_id;
-             cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
-    }
+             cout<<"booo!!Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;   }
         return 1;
     }
 
