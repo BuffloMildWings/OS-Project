@@ -1,5 +1,3 @@
-//  BEST FIT DOESNT WORK YET
-
 #include<iostream>
 #include <time.h>
 #include <cstdlib>
@@ -118,71 +116,50 @@ int memory::allocate_mem_nf(int process_id, int num_units){
 }
 
 int memory::allocate_mem_bf(int process_id, int num_units){
-    int ct=num_units; //counting free blocks in a row
     int bestfit=MAX_SIZE+1;
     int bf=0;
 
-    for(int start=0;start<=MAX_SIZE-num_units;start++)
+    for(int start=0;start<=MAX_SIZE-num_units;start++){
         if (allocation[start] == 0){
             for (int j = (start + 1); j < MAX_SIZE; j++){
-                if (allocation[j] == 0 && ct != 0){
-                    ct--;
+                if (allocation[j] == 0){
                     bf++;
                 }
 
-            else if (allocation[j] != 0) {
-                    start = j;
-                    ct = num_units;
-                    bf=0;
-//                cout<<"Is this updated?"<<endl;
-            }
-
-            else if (ct == 0 && allocation[j] == 0) {
-                    int st=j+1;
-                        for(int m =st;m<MAX_SIZE-num_units;m++){
-                                if(allocation[m]==0)
-                                    bf++;   //keep counting
-                                else if(allocation[m]!=0){
-                                    if(bf<bestfit && bf>num_units){     //sequence lower but not optimal, save and reset count
-                                        bestfit=m-bf; //get start of sequence
-                                        bf=0; //reset sequence count
-                                        st=m; }
-                                    else if(bf>bestfit){    //if sequence bigger than best fit,dont save,reset count
-                                        bf=0;
-                                        st=m;
-                                    }
-
-                                    else if (bf == num_units){  //optimal fit:enter process
-                                            bestfit = m-bf;
-                                        for (int k = bestfit; k < bestfit + num_units; k++){
-                                               allocation[k] = process_id;
-                                        }return 1;
-                                    }
-
-
-                                    }
-                    for (int k = bestfit; k < bestfit + num_units; k++) {
-                        allocation[k] = process_id;
-//                    cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+                else if (allocation[j] != 0) {
+                    cout<<"Is this updated?"<<endl;
+                    if (bf<bestfit && bf>num_units){
+                            bestfit=bf;
+                            start = j;
+                            bf=0;
                     }
-                        }
-                    return 1;
-                }
+                    else if(bf>bestfit && bf>num_units){
+                            start=j;
+                            bf=0;
+                    }
+                    else if(bf=num_units){
+                        for (int k = start; k < start + num_units; k++) {
+                            allocation[k] = process_id;
+         cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+                    }
+                        return 1;
+                    }
 
-                else {
-//                  cout<<"Failed ";
-                    return -1;
-                }
             }
+                else return -1;
+        }
+        for (int k = start; k < start + num_units; k++) {
+            allocation[k] = process_id;
+             cout<<"Process "<<allocation[k]<<" is stored in Memory Block "<< k <<endl;
+    }
+        return 1;
+    }
 
-    return -1;
 
 
 }
-
+return -1;
 }
-
-
 
 int memory::allocate_mem_wf(int process_id, int num_units){
     int ct=num_units; //counting free blocks in a row
